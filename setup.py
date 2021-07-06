@@ -22,3 +22,26 @@ setuptools.setup(
     python_requires = '>= 3.8',
     install_requires = ['pycryptodome']
 )
+
+
+
+# -----==========-----
+#      BUILD .EXE
+# -----==========-----
+from distutils import sysconfig
+from distutils.ccompiler import new_compiler
+PyExecCSource = '''
+#define Py_LIMITED_API 1
+#include <Python.h>
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
+int wmain()
+{
+    wchar_t **argv = _alloca(2 * sizeof(wchar_t *));
+    argv[0] = "-m";
+    argv[1] = "lofile";
+    return Py_Main(2, argv);
+}
+'''
+
