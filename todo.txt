@@ -1,0 +1,3 @@
+lofile v2 - TODO
+
+ - always accept pathlike obj besides IO; if given create IO object automatically
