@@ -1,3 +1,4 @@
-dist
-src/lofile_lool.egg-info
+/dist
+/src/lofile.egg-info
+/src/lofile.prof
 __pycache__
