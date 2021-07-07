@@ -1,3 +1,0 @@
-[console_scripts]
-lofile = lofile.cli:main
-
