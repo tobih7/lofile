@@ -1,0 +1,116 @@
+# lool-File Format Version 2.0 #
+
+
+First Byte:
+  1st Bit - Encryption:
+    0: No
+    1: Yes
+
+  2nd Bit - Compression:
+    0: No
+    2: Yes
+
+  3..4th Bit - Data Type:
+    0: Raw Data
+    4: Encoded JSON
+    8: File Archive
+
+
+
+Optional Data: # introduced by byte n
+  1: Description
+  2: Timestamp
+  3: Encryption
+  4: Password Validation
+  5: Tag
+
+  Description:
+    - maximal 512 characters long
+    - 0-bytes are prohibited
+    - terminated by 0-byte
+
+  Timestamp:
+    - base 255 (offset = 1) encoded number
+    - terminated by 0-byte
+
+  Encryption:
+    - needed for encryption and decryption (AES initialization vector)
+    - fixed length of 16, no termination character
+
+  Password Validation:
+    - used to validate the password when decrypting
+    - consists of 2 parts, first contains 64 bytes, second contains 80 bytes
+    - both parts contain the same random data
+    - 1. part unencrypted
+    - 2. part encrypted (64 bytes data + 16 bytes padding)
+    - when decrypting the decoder decrypts the 1. part and if it matches the 2. part, the password is valid
+
+  Tag:
+    - maximum length of 64 character
+    - legal characters are ASCII letters (lower- and uppercase), numbers, spaces, tabs, !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~
+    - terminated by 0-byte
+
+  End:
+    - final 0-byte
+
+
+
+Data:
+  Raw Data:
+    - self-explanatory
+
+
+  Encoded JSON:
+    syntax:
+      - type + ?length + data
+      - types are introduced by byte n
+      - lengths are base 255 (offset = 1) encoded numbers
+
+    1 null-type:
+      - no data
+
+    2 bool:
+      - one byte
+      - 0 for false and 1 for true
+
+    3 int:
+      - int + 0
+      - ints are base 255 (offset = 1) encoded numbers
+
+    4 negative int:
+      - same as normal int
+      - negative sign is added when decoding
+
+    5 float:
+      - before comma as int + 0 + after comma as int + 0
+
+    6 negative float:
+      - same as float
+      - negative sign is added when decoding
+
+    7 string:
+      - length + 0 + string
+      - strings can contain 0 bytes
+
+    8 array:
+      - length + 0 + value + ...
+      - each value is an independent type (e.g. int, array, etc. )
+      - the values are not seperated because each type is either 0-terminated or has a fixed length
+      - so the array type only tells the decoder that some of the following elements are part of an array
+
+    9 object:
+      - length + 0 + key + value + ...
+      - each key and each value is - just like described in "8 array" - an independent type
+
+
+  File Archive:
+    - stores multiple files
+    - 1 + path + 0 (syntax for empty directories)
+    - path + 0 + timestamp + 0 + length of data + 0 + data
+    - because paths cannot start with 1-byte in Windows, directorys and normal files can easily be differentiated
+    - the paths used are relative, not absolute
+
+
+
+Encryption:
+  # TODO #

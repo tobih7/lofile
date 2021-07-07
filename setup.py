@@ -14,7 +14,7 @@ with open('src/lofile/core/__init__.py') as file:
 # SETUP
 setuptools.setup(
 
-    name = 'lofile-lool',
+    name = 'lofile',
     version = __version__,
     author = 'lool',
     author_email = 'txhx@gmail.com',
