@@ -21,5 +21,9 @@ setuptools.setup(
     packages = setuptools.find_packages('src'),
     python_requires = '>= 3.8',
     install_requires = ['pycryptodome'],
-    scripts = ['bin/lofile.exe']
+    entry_points = {
+        'console_scripts': [
+            'lofile = lofile.cli:main'
+        ]
+    }
 )
