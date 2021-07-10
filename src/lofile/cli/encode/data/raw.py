@@ -1,6 +1,7 @@
 # lool-File Format # CLI Encoder # Raw-Data #
 
-from lofile.cli.loolclitools import Selector, console_input, notepad_input
+from loolclitools import Selector, console_input, notepad_input
+
 from lofile.cli.shared import DataOrigin
 
 

@@ -1,9 +1,10 @@
 # lool-File Format # CLI Encoder #
 
+from loolclitools import out
+
 from lofile.core import Encoder
 from lofile.core.shared import DataType, LofileError
 
-from lofile.cli.loolclitools import out
 from .metadata import Metadata
 from .data import Data
 

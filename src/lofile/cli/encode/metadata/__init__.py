@@ -2,7 +2,7 @@
 
 __all__ = ["Metadata"]
 
-from lofile.cli.loolclitools import Selector, out, yesno
+from loolclitools import Selector, out, yesno
 
 from .data import Data
 from .description import Description

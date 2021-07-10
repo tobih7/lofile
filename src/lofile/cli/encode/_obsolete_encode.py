@@ -2,13 +2,13 @@
 
 
 # ===  IMPORTS  === #
-from lofile.cli.shared import logger
-from msvcrt import getch
 import os
+from msvcrt import getch
+from loolclitools import Selector, askinput, console_input, flush, out, param, vline, yesno
 
+from lofile.cli.shared import logger
 from lofile.core import Encoder
 from lofile.core.shared import DataType, LofileError, LogLvl, TAG_MAX_LENGTH, TAG_VALID_CHARS
-from lofile.cli.loolclitools import Selector, askinput, console_input, flush, out, param, vline, yesno
 
 
 

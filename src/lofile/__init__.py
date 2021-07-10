@@ -1,5 +1,9 @@
 # lool #
 
+'''
+    The lofile package!
+'''
+
 __all__ = ['main', 'Encoder', 'Decoder', '__version__', 'LofileError']
 
 from .core import Encoder, Decoder, __version__, LofileError

@@ -1,7 +1,8 @@
 # lool-File Format # CLI Encoder # Meta Data # Tag #
 
+from loolclitools import getch, out
+
 from lofile.core.shared import TAG_MAX_LENGTH, TAG_VALID_CHARS
-from lofile.cli.loolclitools import getch, out
 
 
 class Tag:

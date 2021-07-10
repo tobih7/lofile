@@ -1,8 +1,8 @@
 # lool-File Format # CLI Encoder # JSON-Data #
 
 from json import loads, JSONDecodeError
+from loolclitools import Selector, console_input, get_cursor_position, notepad_input, out
 
-from lofile.cli.loolclitools import Selector, console_input, get_cursor_position, notepad_input, out
 from lofile.cli.shared import DataOrigin
 
 

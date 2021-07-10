@@ -1,7 +1,7 @@
 # lool-File Format # CLI Encoder # Meta Data # Password #
 
 import os
-from lofile.cli.loolclitools import Selector, askinput, flush, out, vline
+from loolclitools import Selector, askinput, flush, out, vline
 
 
 class Password:

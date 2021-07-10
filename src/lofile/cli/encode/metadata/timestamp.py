@@ -1,6 +1,6 @@
 # lool-File Format # CLI Encoder # Meta Data # Timestamp #
 
-from lofile.cli.loolclitools import Selector
+from loolclitools import Selector
 
 
 class Timestamp:

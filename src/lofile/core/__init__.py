@@ -2,13 +2,13 @@
 
 '''
 
-    lool-File Format Version 2.0
+    lool-File Format
 
     started: Q2 20
 
 '''
 
-__version__ = '2.0.35'
+__version__ = '1.0'
 
 __all__ = ['Encoder', 'Decoder', '__version__', 'LofileError']
 

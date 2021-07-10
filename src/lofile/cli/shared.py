@@ -3,8 +3,8 @@
 __all__ = ["DataOrigin", "logger"]
 
 from enum import Enum
+from loolclitools import out
 from lofile.core.shared import LogLvl
-from lofile.cli.loolclitools import out
 
 # ===  CONSTANTS  === #
 LJUST = 15

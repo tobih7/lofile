@@ -1,6 +1,6 @@
 # lool-File Format # CLI Encoder # Meta Data # Compress #
 
-from lofile.cli.loolclitools import Selector, out
+from loolclitools import Selector, out
 
 
 class Compress:

@@ -6,7 +6,7 @@ from ctypes import windll
 from time import sleep
 from subprocess import call, DEVNULL
 
-from lofile.cli.loolclitools import Selector, out
+from loolclitools import Selector, out
 
 
 def installer():

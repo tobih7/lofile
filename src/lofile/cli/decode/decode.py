@@ -5,9 +5,9 @@ from lofile.core.shared import DataType
 from os import chdir, path as ospath
 from shutil import copyfileobj
 from json import dumps
+from loolclitools import Selector, Timer, askinput, askpath, flush, out, param, vline, yesno
 
 from lofile.core import LofileError, Decoder
-from lofile.cli.loolclitools import Selector, Timer, askinput, askpath, flush, out, param, vline, yesno
 from lofile.cli.shared import LJUST, logger
 
 

@@ -1,10 +1,10 @@
 # lool-File Format # CLI Encoder # Meta Data # Data #
 
-from json import dumps
 import os
+from json import dumps
+from loolclitools import Selector, get_cursor_position, out, param, vline
 
 from lofile.core.shared import DataType
-from lofile.cli.loolclitools import Selector, get_cursor_position, out, param, vline
 from lofile.cli.shared import DataOrigin
 
 

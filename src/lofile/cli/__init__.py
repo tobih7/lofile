@@ -5,7 +5,7 @@ from os import path as ospath
 from time import perf_counter
 
 from lofile.core import Encoder, Decoder, __version__
-from .loolclitools import InteractiveConsole, Selector, flush, out, pause_and_exit
+from loolclitools import InteractiveConsole, Selector, flush, out, pause_and_exit
 
 __all__ = ['main']
 
@@ -34,7 +34,7 @@ def main(*, dev: bool = False):
             print(end="\n  Press any key to exit . . . ", flush=True)
             from msvcrt import kbhit
             try:
-                from lofile.cli.loolclitools import getch, InteractiveConsole
+                from loolclitools import getch, InteractiveConsole
                 # inject this into the interactive console
                 InteractiveConsole.temporary_globals["traceback"] = lambda: sys.__excepthook__(type_, value, traceback)
             except:

@@ -1,7 +1,8 @@
 # lool-File Format # CLI Encoder # Meta Data # Description #
 
+from loolclitools import Selector, console_input, notepad_input, out, vline
+
 from lofile.core.shared import DESCRIPTION_MAX_LENGTH
-from lofile.cli.loolclitools import Selector, console_input, notepad_input, out, vline
 
 
 class Description:
