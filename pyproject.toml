@@ -1,6 +1,8 @@
 [build-system]
 requires = [
     "setuptools",
-    "wheel"
+    "wheel",
+    "pycryptodome", # <-- required because the module is imported in setup.py
+    "loolclitools"  # <--
 ]
 build-backend = "setuptools.build_meta"

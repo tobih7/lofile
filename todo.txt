@@ -1,3 +1,6 @@
-lofile v2 - TODO
+lofile - TODO
 
  - always accept pathlike obj besides IO; if given create IO object automatically
+
+ - write class for excepthook in own file:
+   - with __call__()

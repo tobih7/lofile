@@ -12,4 +12,4 @@ with Profile() as pr:
 
 stats = Stats(pr)
 stats.sort_stats(SortKey.TIME)
-stats.dump_stats(filename='lofile.prof')
+stats.dump_stats(filename='lofile.prof')  # $ snakeviz lofile.prof

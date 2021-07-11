@@ -6,8 +6,14 @@ from os import makedirs, mkdir, path as ospath, walk
 from io import DEFAULT_BUFFER_SIZE
 from typing import BinaryIO, Callable, List, Optional
 
-from lofile.core.shared import BinaryToFilesError, ExtractionDirectoryExistsError, InvalidDirectory, LogLvl, binary_to_int, int_to_binary
-
+from lofile.core.shared import (
+    BinaryToFilesError,
+    ExtractionDirectoryExistsError,
+    InvalidDirectory,
+    LogLvl,
+    binary_to_int,
+    int_to_binary,
+)
 
 
 # ===  ARCHIVE ENCODER  === #
@@ -17,7 +23,6 @@ class FilesToBinary:
         self.path = ospath.normpath(path)
         self.errors = list()
         self.files: List[str] = list()
-
 
         if logger is None:
             self._log = lambda a, b: None
@@ -36,8 +41,9 @@ class FilesToBinary:
             for i in filenames:
                 self.files.append(ospath.join(ospath.relpath(dirpath, self.path), i))
 
-
-    def __iter__(self, ignore_errors: bool = False): # returns the data in bytes-object blocks of maximum DEFAULT_BUFFER_SIZE bytes
+    def __iter__(
+        self, ignore_errors: bool = False
+    ):  # returns the data in bytes-object blocks of maximum DEFAULT_BUFFER_SIZE bytes
         for i in self.files:
             self._log(f"copying: {i}", LogLvl.INFO)
 
@@ -56,28 +62,28 @@ class FilesToBinary:
                     if not ignore_errors:
                         yield error
                 else:
-                    try: # sometimes an error is first raised on calling file.read # ka y
-                        file.seek(0, 2) # move to EOF so that current pos equals file size
-                        yield self.binpath(i) + b"\x00" + int_to_binary(file.tell()) + b"\x00"
-                        file.seek(0, 0) # move back to pos 0
-                        while (buf := file.read(DEFAULT_BUFFER_SIZE)):
+                    try:  # sometimes an error is first raised on calling file.read # ka y
+                        file.seek(
+                            0, 2
+                        )  # move to EOF so that current pos equals file size
+                        yield self.binpath(i) + b"\x00" + int_to_binary(
+                            file.tell()
+                        ) + b"\x00"
+                        file.seek(0, 0)  # move back to pos 0
+                        while buf := file.read(DEFAULT_BUFFER_SIZE):
                             yield buf
                     except (FileNotFoundError, PermissionError, OSError) as error:
                         self.errors.append(error)
                         if not ignore_errors:
                             yield error
 
-
     @staticmethod
     def binpath(path: str) -> bytes:
         return ospath.normpath(path).encode("UTF-8")
 
 
-
-
-
 # ===  ARCHIVE DECODER  === #
-class BinaryToFiles():
+class BinaryToFiles:
     class Path:
         def __init__(self):
             self.path: str = None
@@ -86,8 +92,9 @@ class BinaryToFiles():
             self.is_dir: bool = False
 
         def __repr__(self):
-            return "<" + ("Directory " if self.is_dir else "File ") + \
-                repr(self.path) + ">"
+            return (
+                "<" + ("Directory " if self.is_dir else "File ") + repr(self.path) + ">"
+            )
 
     def __init__(self, file: BinaryIO):
         self.file = file
@@ -100,13 +107,15 @@ class BinaryToFiles():
             if start == b"":
                 break
 
-            elif start == b"\x02": # directory
+            elif start == b"\x02":  # directory
                 f = self.Path()
-                f.path = self.__read_until_zero()[1:].decode() # [1:] because directorys start with 0x02
+                f.path = self.__read_until_zero()[
+                    1:
+                ].decode()  # [1:] because directorys start with 0x02
                 f.is_dir = True
                 self.__files.append(f)
 
-            else: # file
+            else:  # file
                 f = self.Path()
                 f.path = self.__read_until_zero().decode()
                 f.length = binary_to_int(self.__read_until_zero())
@@ -119,11 +128,10 @@ class BinaryToFiles():
     def __read_until_zero(self) -> bytes:
         data = bytes()
         while (char := self.file.read(1)) != b"\x00":
-            if not char: # if EOF
+            if not char:  # if EOF
                 raise BinaryToFilesError("unexpected EOF")
             data += char
         return data
-
 
     def extract_all(self, directory: str):
         assert isinstance(directory, str)
@@ -143,8 +151,15 @@ class BinaryToFiles():
             makedirs(ospath.join(path, fileobj.path))
         else:
             if not directly:
-                makedirs(ospath.join(path, ospath.split(fileobj.path)[0]), exist_ok=True)
-            with open(ospath.join(path, ospath.split(fileobj.path)[1] if directly else fileobj.path), "wb") as file:
+                makedirs(
+                    ospath.join(path, ospath.split(fileobj.path)[0]), exist_ok=True
+                )
+            with open(
+                ospath.join(
+                    path, ospath.split(fileobj.path)[1] if directly else fileobj.path
+                ),
+                "wb",
+            ) as file:
                 self.file.seek(fileobj.offset)
                 for _ in range(fileobj.length // DEFAULT_BUFFER_SIZE):
                     file.write(self.file.read(DEFAULT_BUFFER_SIZE))

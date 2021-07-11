@@ -9,10 +9,12 @@ from lofile.core.shared import LogLvl
 # ===  CONSTANTS  === #
 LJUST = 15
 
+
 class DataOrigin(Enum):
     File = 0
     NotepadInput = 1
     ConsoleInput = 2
+
 
 # colorized logger
 def logger(msg: str, lvl: LogLvl):

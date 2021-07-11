@@ -3,8 +3,8 @@
 import sys, os
 from setuptools import setup, find_packages
 
-sys.path.insert(0, os.getcwd())
-from src.lofile import __doc__, __version__
+sys.path.insert(0, os.getcwd() + '\\src')
+from lofile import __doc__, __version__
 
 # SETUP
 setup(

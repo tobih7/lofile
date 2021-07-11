@@ -12,21 +12,24 @@ from datetime import datetime
 from typing import Callable, Final, Optional, Union, Tuple, BinaryIO
 
 # 3rd party
-from Crypto.Cipher import AES # pip install pycryptodome
-
+from Crypto.Cipher import AES  # pip install pycryptodome
 
 
 # ===  CONSTANTS  === #
-NONETYPE:               Final = type(None) # to reduce function calls
+NONETYPE: Final = type(None)  # to reduce function calls
 DESCRIPTION_MAX_LENGTH: Final = 512
-TAG_MAX_LENGTH:         Final = 64
-TAG_VALID_CHARS:        Final = frozenset(b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ ")
+TAG_MAX_LENGTH: Final = 64
+TAG_VALID_CHARS: Final = frozenset(
+    b"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~ "
+)
+
 
 class DataType(Enum):
     Raw = 0
     JSON = 1
     Archive = 2
     PyScript = 3
+
 
 class LogLvl(Enum):
     INFO = 0
@@ -41,36 +44,68 @@ class LofileError(Exception):
 
 
 class InvalidDirectory(LofileError):
-    "The directory \"{}\" does not exist."
+    'The directory "{}" does not exist.'
+
 
 class ExtractionDirectoryExistsError(LofileError):
-    "The extraction directory \"{}\" already exists."
+    'The extraction directory "{}" already exists.'
+
 
 class InvalidTimestamp(LofileError):
     "Tried to convert an invalid timestamp."
 
+
 class JsonToBinError(LofileError):
     "{}"
+
 
 class BinToJsonError(LofileError):
     "Error while converting binary data to JSON data: {}"
 
+
 class DecodeError(LofileError):
     "{}"
 
+
 class EncodeError(LofileError):
     "{}"
+
 
 class BinaryToFilesError(LofileError):
     "{}"
 
 
-
 # ===  TIMEFORMAT  === #
-def timeformat(time: Union[int, float]) -> str: # Works perfectly! Do not touch!
+def timeformat(time: Union[int, float]) -> str:  # Works perfectly! Do not touch!
     assert isinstance(time, (int, float))
-    return str((f"{h} hour{'s' if h > 1 else ''}, " if (h:=int(time // 3600)) > 0 else "") + (f"{m} minute{'s' if m > 1 else ''}, " if (m:=int(time % 3600 // 60)) > 0 else "") + (f"{s} second{'s' if s > 1 else ''}, " if (s:=int(time % 3600 % 60)) > 0 else "") + (f"{ms} millisecond{'s' if ms > 1 else ''}, " if (ms:=int(round(time % 3600 % 60 % 1, 3) * 1000)) > 0 else "")).strip()[:-1][::-1].replace(",", " and"[::-1], 1)[::-1] if round(time, 3) > 0 else "0 milliseconds"
-
+    return (
+        str(
+            (
+                f"{h} hour{'s' if h > 1 else ''}, "
+                if (h := int(time // 3600)) > 0
+                else ""
+            )
+            + (
+                f"{m} minute{'s' if m > 1 else ''}, "
+                if (m := int(time % 3600 // 60)) > 0
+                else ""
+            )
+            + (
+                f"{s} second{'s' if s > 1 else ''}, "
+                if (s := int(time % 3600 % 60)) > 0
+                else ""
+            )
+            + (
+                f"{ms} millisecond{'s' if ms > 1 else ''}, "
+                if (ms := int(round(time % 3600 % 60 % 1, 3) * 1000)) > 0
+                else ""
+            )
+        )
+        .strip()[:-1][::-1]
+        .replace(",", " and"[::-1], 1)[::-1]
+        if round(time, 3) > 0
+        else "0 milliseconds"
+    )
 
 
 # ===  INT <-> BINARY  === #
@@ -86,12 +121,12 @@ def int_to_binary(num: int, /, offset: int = 1) -> bytes:
             num //= base
     return bytes([i + offset for i in digits])
 
+
 def binary_to_int(num: bytes, /, offset: int = 1) -> int:
     assert isinstance(num, bytes)
     base = 256 - offset
     num = [i - offset for i in num]
-    return sum((base**i*n) for (i, n) in enumerate(num[::-1]))
-
+    return sum((base ** i * n) for (i, n) in enumerate(num[::-1]))
 
 
 # ===  TIMESTAMP <-> BINARY  === #
@@ -100,10 +135,10 @@ def timestamp_to_binary(t: Union[int, float] = None) -> bytes:
     assert isinstance(t, (int, float))
     return int_to_binary(int(t))
 
+
 def binary_to_timestamp(data: bytes) -> datetime:
     assert isinstance(data, bytes)
     return datetime.fromtimestamp(binary_to_int(data))
-
 
 
 # ===  ATTRIBUTES <-> BINARY  === #
@@ -113,48 +148,56 @@ def attrib_to_binary(encryption: bool, compression: bool, datatype: DataType) ->
     assert isinstance(datatype, DataType)
     return bytes([int(encryption) + int(compression) * 2 + datatype.value * 4])
 
+
 def binary_to_attrib(byte: int) -> Tuple[bool, bool, DataType]:
     assert isinstance(byte, int)
     if not byte >= 0:
         raise ValueError("invalid datatype")
-    return bool(byte % 2), bool(byte // 2 % 2), DataType(byte // 4) # if datatype is invalid also ValueError is raised
-
+    return (
+        bool(byte % 2),
+        bool(byte // 2 % 2),
+        DataType(byte // 4),
+    )  # if datatype is invalid also ValueError is raised
 
 
 # ===  COMPRESSION  === #
 def compress(inputfile: BinaryIO, outputfile: BinaryIO, level: int = 9) -> None:
     c = compressobj(level=level, memLevel=9)
-    while (buf := inputfile.read(DEFAULT_BUFFER_SIZE)):
+    while buf := inputfile.read(DEFAULT_BUFFER_SIZE):
         outputfile.write(c.compress(buf))
     outputfile.write(c.flush())
+
 
 # ===  DECOMPRESSION  === #
 def decompress(inputfile: BinaryIO, outputfile: BinaryIO) -> None:
     c = decompressobj()
-    while (buf := inputfile.read(DEFAULT_BUFFER_SIZE)):
+    while buf := inputfile.read(DEFAULT_BUFFER_SIZE):
         outputfile.write(c.decompress(buf))
     outputfile.write(c.flush())
 
 
-
 # ===  ENCRYPTION  === #
-def encrypt(inputfile: BinaryIO, outputfile: BinaryIO, key: bytes, init_vector: bytes) -> None:
+def encrypt(
+    inputfile: BinaryIO, outputfile: BinaryIO, key: bytes, init_vector: bytes
+) -> None:
     aes = AES.new(key, AES.MODE_CBC, init_vector)
-    while (buf := inputfile.read(DEFAULT_BUFFER_SIZE)):
+    while buf := inputfile.read(DEFAULT_BUFFER_SIZE):
         if len(buf) != DEFAULT_BUFFER_SIZE:
             fill = 16 - len(buf) % 16
             buf += fill * bytes([fill])
         outputfile.write(aes.encrypt(buf))
 
+
 # ===  DECRYPTION  === #
-def decrypt(inputfile: BinaryIO, outputfile: BinaryIO, key: bytes, init_vector: bytes) -> None:
+def decrypt(
+    inputfile: BinaryIO, outputfile: BinaryIO, key: bytes, init_vector: bytes
+) -> None:
     aes = AES.new(key, AES.MODE_CBC, init_vector)
-    while (buf := inputfile.read(DEFAULT_BUFFER_SIZE)):
+    while buf := inputfile.read(DEFAULT_BUFFER_SIZE):
         buf = aes.decrypt(buf)
         if len(buf) != DEFAULT_BUFFER_SIZE:
-            buf = buf[:-buf[-1]]
+            buf = buf[: -buf[-1]]
         outputfile.write(buf)
-
 
 
 # ===  BASE CLASS  === #
@@ -170,14 +213,15 @@ class BaseClass:
     def __init__(self) -> None:
 
         # INTERNAL ATTRIBUTES #
-        self.__tempfile_dir: Optional[Path]  = None
-        self.__starttime:    float           = perf_counter()
-        self.__took:         Optional[float] = None
-        self.__logger:       Optional[Callable[[str, LogLvl], None]] = lambda msg, lvl: print(f"[{lvl.name}] - {msg}")
-
+        self.__tempfile_dir: Optional[Path] = None
+        self.__starttime: float = perf_counter()
+        self.__took: Optional[float] = None
+        self.__logger: Optional[Callable[[str, LogLvl], None]] = lambda msg, lvl: print(
+            f"[{lvl.name}] - {msg}"
+        )
 
     # ===  ENTER  === #
-    def __enter__(self): # for context manager
+    def __enter__(self):  # for context manager
         return self
 
     # ===  EXIT  === #
@@ -191,11 +235,12 @@ class BaseClass:
 
         elif exception_type.__base__ is LofileError:
             self.log(str(exception_value), LogLvl.ERROR)
-            return False # if False: with-statement: exception is raised
-
+            return False  # if False: with-statement: exception is raised
 
     # ===  OTHER  === #
-    def log(self, msg: str, lvl: LogLvl = LogLvl.INFO): # may be used by caller, from outside
+    def log(
+        self, msg: str, lvl: LogLvl = LogLvl.INFO
+    ):  # may be used by caller, from outside
         if not isinstance(msg, str):
             raise TypeError("argument 'msg': expected type str")
         if not isinstance(lvl, LogLvl):
@@ -203,38 +248,46 @@ class BaseClass:
         if self.__logger is not None:
             self.__logger(msg, lvl)
 
-    def reset_timer(self): # useful for CLI, after inputs the time can be reset to zero
+    def reset_timer(self):  # useful for CLI, after inputs the time can be reset to zero
         self.__starttime = perf_counter()
-    def subtract_from_took(self, value: Union[int, float]): # if e.g. inputs etc. are used inside the context manager, this is useful
+
+    def subtract_from_took(
+        self, value: Union[int, float]
+    ):  # if e.g. inputs etc. are used inside the context manager, this is useful
         self.__starttime -= value
 
-
-    def _get_default_tempfile_dir(self, filepath) -> Path: # default tempfile location depends on input/output file
-        if self.tempfile_dir: # if custom dir was set return it
+    def _get_default_tempfile_dir(
+        self, filepath
+    ) -> Path:  # default tempfile location depends on input/output file
+        if self.tempfile_dir:  # if custom dir was set return it
             return self.tempfile_dir
         stdtmp = Path(getenv("TMP")).resolve()
         try:
             filepth = Path(filepath).resolve()
-        except OSError: # path may be 'nul' or some other "invalid parameter"
+        except OSError:  # path may be 'nul' or some other "invalid parameter"
             return stdtmp
         return stdtmp if stdtmp.drive == filepth.drive else filepth.parent
-
 
     # ===  PROPERTIES  === #
 
     # TOOK #
     @property
     def took_int(self) -> int:
-        return self.__took or perf_counter() - self.__starttime # if __took is None, __exit__ was not called yet (or wont be at all); timer cant be stopped
+        return (
+            self.__took or perf_counter() - self.__starttime
+        )  # if __took is None, __exit__ was not called yet (or wont be at all); timer cant be stopped
+
     @property
     def took(self) -> str:
         return timeformat(self.took_int)
+
     # took_int and took are read-only, no setter functions
 
     # LOGGER #
     @property
     def logger(self) -> Callable[[str, str], None]:
         return self.__logger
+
     @logger.setter
     def logger(self, value):
         if value is None:
@@ -248,10 +301,13 @@ class BaseClass:
     @property
     def tempfile_dir(self) -> Path:
         return self.__tempfile_dir
+
     @tempfile_dir.setter
     def tempfile_dir(self, value):
         if not isinstance(value, (str, bytes, PurePath, NONETYPE)):
-            raise TypeError("tempfile_dir: expected path-like or None (str, bytes, pathlib.Path)")
+            raise TypeError(
+                "tempfile_dir: expected path-like or None (str, bytes, pathlib.Path)"
+            )
         elif value == None:
             self.__tempfile_dir = None
         else:
@@ -260,4 +316,3 @@ class BaseClass:
             raise ValueError("tempfile_dir: expected a valid existing directory")
         else:
             self.__tempfile_dir = value
-

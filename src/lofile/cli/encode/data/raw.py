@@ -6,9 +6,16 @@ from lofile.cli.shared import DataOrigin
 
 
 class Raw:
-
     def _data_raw(self, /, method=None, data=None):
-        s = Selector(("file", "notepad input", "console input"), "Data Source:", print_result=False).pos if method is None else method
+        s = (
+            Selector(
+                ("file", "notepad input", "console input"),
+                "Data Source:",
+                print_result=False,
+            ).pos
+            if method is None
+            else method
+        )
         if s == 0:
             self.dataorigin = (DataOrigin.File,)
             return self._askfile()

@@ -7,7 +7,6 @@ from json import dumps
 from lofile.core.shared import *
 
 
-
 # ===  JSON ENCODER  === #
 def json_to_binary(obj: object) -> bytes:
     try:
@@ -23,21 +22,32 @@ def json_to_binary(obj: object) -> bytes:
         elif isinstance(obj, bool):
             return b"\x02\x01" if obj else b"\x02\x00"
         elif isinstance(obj, int):
-            return (b"\x03" if obj >= 0 else b"\x04") + int_to_binary(abs(obj)) + b"\x00"
+            return (
+                (b"\x03" if obj >= 0 else b"\x04") + int_to_binary(abs(obj)) + b"\x00"
+            )
         elif isinstance(obj, float):
             flt = [int_to_binary(abs(int(i))) for i in str(obj).split(".")]
-            return (b"\x05" if obj >= 0.0 else b"\x06") + flt[0] + b"\x00" + flt[1] + b"\x00"
+            return (
+                (b"\x05" if obj >= 0.0 else b"\x06")
+                + flt[0]
+                + b"\x00"
+                + flt[1]
+                + b"\x00"
+            )
         elif isinstance(obj, str):
             return b"\x07" + binlen(obj) + obj.encode()
         elif isinstance(obj, list):
             return b"\x08" + binlen(obj) + bytes().join(map(obj_to_binary, obj))
         elif isinstance(obj, dict):
-            return b"\x09" + binlen(obj) + bytes().join(map(obj_to_binary, ([b for a in obj.items() for b in a])))
+            return (
+                b"\x09"
+                + binlen(obj)
+                + bytes().join(
+                    map(obj_to_binary, ([b for a in obj.items() for b in a]))
+                )
+            )
 
     return obj_to_binary(obj)
-
-
-
 
 
 # ===  JSON DECODER  === #
@@ -97,7 +107,6 @@ class _bintojson:
     def bin_float(self):
         num1, num2, self.data = self.data.split(b"\x00", 2)
         return float(str(".").join([str(binary_to_int(i)) for i in (num1[1:], num2)]))
-
 
 
 def binary_to_json(rawdata: bytes) -> object:

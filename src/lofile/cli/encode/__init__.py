@@ -10,7 +10,6 @@ from .data import Data
 
 
 class encode(Encoder, Metadata, Data):
-
     def __init__(self):
         super().__init__()
         self.datatype = DataType.Raw
@@ -28,8 +27,7 @@ class encode(Encoder, Metadata, Data):
             # last ask for save location
             ...
 
-
-
         except LofileError as err:
-            out("\r\x1b[K  \x1b[0mError: \x1b[91m", str(err).capitalize(), "! \x1b[0m\n")
-
+            out(
+                "\r\x1b[K  \x1b[0mError: \x1b[91m", str(err).capitalize(), "! \x1b[0m\n"
+            )
