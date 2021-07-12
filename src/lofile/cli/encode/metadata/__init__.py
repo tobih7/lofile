@@ -14,7 +14,9 @@ from .compress import Compress
 
 class Metadata(Data, Description, Tag, Timestamp, Password, Compress):
     def askmetadata(self):
-        self._custom_compression_level_is_set = False  # level is only shown if it was customly set, this attribute is needed
+        self._custom_compression_level_is_set = (
+            False  # level is only shown if it was customly set, this attribute is needed
+        )
 
         funcs = (
             self._set_data,
@@ -26,9 +28,7 @@ class Metadata(Data, Description, Tag, Timestamp, Password, Compress):
         )
 
         while True:
-            out(
-                "\x1b[4;2H\x1b[J", flush=True
-            )  # using absolute pos, due to CSI s and CSI u being used inside the loop
+            out("\x1b[4;2H\x1b[J", flush=True)  # using absolute pos, due to CSI s and CSI u being used inside the loop
             s = Selector(
                 ("\x1b[92mconfirm and proceed", None, *self.parsed_metadata()),
                 print_result=False,
@@ -42,9 +42,7 @@ class Metadata(Data, Description, Tag, Timestamp, Password, Compress):
         yield "Data\x1b[24m:                 " + self.datatype.name
         yield None
         yield "Description\x1b[24m:          " + self.__parsed_description()
-        yield "Tag\x1b[24m:                  " + (
-            self.tag.decode() if self.tag is not None else "\x1b[96mNo"
-        )
+        yield "Tag\x1b[24m:                  " + (self.tag.decode() if self.tag is not None else "\x1b[96mNo")
         yield f"Store Timestamp\x1b[24m:      \x1b[96m{yesno(self.timestamp)}"
         yield None
         yield f"Password\x1b[24m:             \x1b[96m{yesno(self.is_password)}"
@@ -59,11 +57,7 @@ class Metadata(Data, Description, Tag, Timestamp, Password, Compress):
             "\x1b[0m"
             + (dsc := self.description.splitlines())[0][:32].decode()
             + (" \x1b[90m... " if len(dsc[0]) > 32 or len(dsc) > 1 else "")
-            + (
-                f"({len(dsc)-1} more line" + ("s" if len(dsc) - 1 > 1 else "") + ")"
-                if len(dsc) > 1
-                else ""
-            )
+            + (f"({len(dsc)-1} more line" + ("s" if len(dsc) - 1 > 1 else "") + ")" if len(dsc) > 1 else "")
         )
 
     def __parsed_compress(self):

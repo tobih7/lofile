@@ -12,9 +12,7 @@ from lofile.core.shared import NONETYPE
 class PyScriptInterface:
     def __init__(self) -> None:
         self.__init: str = None  # name of the function to run initially
-        self.__entrypoints: List[
-            Tuple[str, str]
-        ] = []  # the functions to ask for when decoding
+        self.__entrypoints: List[Tuple[str, str]] = []  # the functions to ask for when decoding
         self.__description: Optional[str] = None  # initially printed description
 
     def init(self, func) -> Callable:
@@ -25,11 +23,13 @@ class PyScriptInterface:
         return func
 
     def entrypoint(self, func, name: Optional[str] = None) -> Callable:
-        """This decorator marks a function as a possible entry point.
+        """
+        This decorator marks a function as a possible entry point.
         All these functions will be available for selection when the .lo file is decoded.
         If only one entrypoint is defined, it will be automatically executed, without asking.
 
-        `name` - this optional parameter sets the text to display in the selection (when decoding, and asking what to run)"""
+        `name` - this optional parameter sets the text to display in the selection (when decoding, and asking what to run)
+        """
 
         if not callable(func):
             raise TypeError("parameter 'func' needs to be a function")

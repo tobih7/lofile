@@ -51,13 +51,7 @@ def encode(filepath: str):
                         "\x1b[0m"
                         + dsc[0][:32].decode()
                         + (" \x1b[90m... " if len(dsc[0]) > 32 or len(dsc) > 1 else "")
-                        + (
-                            f"({len(dsc)-1} more line"
-                            + ("s" if len(dsc) - 1 > 1 else "")
-                            + ")"
-                            if len(dsc) > 1
-                            else ""
-                        )
+                        + (f"({len(dsc)-1} more line" + ("s" if len(dsc) - 1 > 1 else "") + ")" if len(dsc) > 1 else "")
                     )
 
             def parsed_options() -> str:
@@ -67,11 +61,7 @@ def encode(filepath: str):
                     "",
                     "Description\x1b[24m:          " + parsed_description(),
                     "Tag\x1b[24m:                  "
-                    + (
-                        encoder.tag.decode()
-                        if encoder.tag is not None
-                        else "\x1b[96mNo"
-                    ),
+                    + (encoder.tag.decode() if encoder.tag is not None else "\x1b[96mNo"),
                     f"Store Timestamp\x1b[24m:      \x1b[96m{yesno(encoder.timestamp)}",
                     "",
                     f"Password\x1b[24m:             \x1b[96m{yesno(encoder.is_password)}",
@@ -144,12 +134,7 @@ def encode(filepath: str):
                         out(
                             vline(),
                             "\r\x1b[4C\x1b[96m  Current Description  \x1b[0m\n",
-                            *(
-                                "  " + line
-                                for line in encoder.description.decode().splitlines(
-                                    keepends=True
-                                )
-                            ),
+                            *("  " + line for line in encoder.description.decode().splitlines(keepends=True)),
                             "\n",
                             vline(),
                             "\n\n",
@@ -223,9 +208,7 @@ def encode(filepath: str):
                     def set_pswd():
                         while True:
                             try:
-                                pswd = askinput(
-                                    "Password: ", is_password=True, can_terminate=False
-                                ).encode()
+                                pswd = askinput("Password: ", is_password=True, can_terminate=False).encode()
                                 if (
                                     pswd
                                     == askinput(
@@ -237,9 +220,7 @@ def encode(filepath: str):
                                     encoder.password = pswd
                                     break
                                 else:
-                                    out(
-                                        "\n\x1b[91m  The passwords do not match!\x1b[0m\r\x1b[2A\x1b[K\x1b[A\x1b[K"
-                                    )
+                                    out("\n\x1b[91m  The passwords do not match!\x1b[0m\r\x1b[2A\x1b[K\x1b[A\x1b[K")
                             except KeyboardInterrupt:
                                 break
 
@@ -279,19 +260,11 @@ def encode(filepath: str):
                                     "\n\n  ",
                                     repr(encoder.init_vector)[2:-1],
                                     "\n\n  ",
-                                    " ".join(
-                                        ("0" + hex(i)[2:])[-2:].upper()
-                                        for i in encoder.init_vector
-                                    ),
+                                    " ".join(("0" + hex(i)[2:])[-2:].upper() for i in encoder.init_vector),
                                 )
                                 # UTF-8 representation
                                 try:
-                                    if (
-                                        bytes(
-                                            ord(i) for i in encoder.init_vector.decode()
-                                        )
-                                        != encoder.init_vector
-                                    ):
+                                    if bytes(ord(i) for i in encoder.init_vector.decode()) != encoder.init_vector:
                                         # if the binary and the UTF-8 decoded representations differ, show this:
                                         out(
                                             "\n\n  UTF-8 decoded: ",
@@ -337,9 +310,7 @@ def encode(filepath: str):
                                                 break
                                             else:
                                                 if len(iv.encode()) != 16:
-                                                    iverr(
-                                                        f"Invalid length: {len(iv.encode())}"
-                                                    )
+                                                    iverr(f"Invalid length: {len(iv.encode())}")
                                                     flush()
                                                 else:
                                                     encoder.init_vector = iv.encode()
@@ -358,17 +329,13 @@ def encode(filepath: str):
                                             else:
                                                 try:
                                                     iv = bytes(
-                                                        int(i, 16)
-                                                        for i in iv.split(" ")
-                                                        if i
+                                                        int(i, 16) for i in iv.split(" ") if i
                                                     )  # the if i will allow multiple spaces as seperator
                                                 except ValueError:
                                                     iverr("Parsing Error!")
                                                 else:
                                                     if len(iv) != 16:
-                                                        iverr(
-                                                            f"Invalid length: {len(iv)}"
-                                                        )
+                                                        iverr(f"Invalid length: {len(iv)}")
                                                         flush()
                                                     else:
                                                         encoder.init_vector = iv
@@ -385,9 +352,7 @@ def encode(filepath: str):
                                     "  If it's missing decoding with a wrong password will work, but the data will be invalid.\n\n"
                                     "  For maximum security this should be disabled, but it's not really a risk.\n\n"
                                     "  Currently: \x1b[93m",
-                                    "enabled"
-                                    if encoder.password_validation
-                                    else "disabled",
+                                    "enabled" if encoder.password_validation else "disabled",
                                     "\x1b[0m\n\n",
                                 )
 
@@ -423,9 +388,7 @@ def encode(filepath: str):
                         elif cmprs == 1:
                             encoder.compress = False
                         elif cmprs == 2:
-                            out(
-                                "  The default value is 6.\n\n  Simply pressing a number is also possible.\n\n"
-                            )
+                            out("  The default value is 6.\n\n  Simply pressing a number is also possible.\n\n")
                             try:
                                 lvl = Selector(
                                     ("1", "2", "3", "4", "5", "6", "7", "8", "9"),

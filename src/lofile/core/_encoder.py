@@ -53,9 +53,7 @@ class Encoder(BaseClass):
 
         # verify file argument
         if not isinstance(file, BufferedWriter):
-            raise TypeError(
-                "argument 'file' must be of type BinaryIO/BufferedWriter (open() in mode \"wb\")"
-            )
+            raise TypeError("argument 'file' must be of type BinaryIO/BufferedWriter (open() in mode \"wb\")")
         self.__file = file  # file is also needed in other methods
 
         if raw is None and json is None and archive is None and pyscript is None:
@@ -77,9 +75,7 @@ class Encoder(BaseClass):
 
         elif archive is not None:
             if not isinstance(archive, (str, NONETYPE)):
-                raise TypeError(
-                    f"argument archive must be path to directory of type str, not {type(archive).__name__}"
-                )
+                raise TypeError(f"argument archive must be path to directory of type str, not {type(archive).__name__}")
             datatype = DataType.Archive
 
         else:  # pyscript is not None
@@ -94,9 +90,7 @@ class Encoder(BaseClass):
         self.__flushheader(datatype)
 
         # decide whether to write to temporary file or already to the final file
-        if (
-            self.__compress or self.__password is not None
-        ):  # if theses steps are needed, first create a temporary file
+        if self.__compress or self.__password is not None:  # if theses steps are needed, first create a temporary file
             buffer = TemporaryFile(dir=self._get_default_tempfile_dir(self.__file.name))
         else:  # else directly write the data to the final file
             buffer = self.__file
@@ -104,9 +98,7 @@ class Encoder(BaseClass):
         # CREATE DATA
         self.log("processing data")
 
-        if (
-            datatype is DataType.Raw
-        ):  # FIXME: POTENTIAL ERROR: checking for identity, not equality; may be wrong
+        if datatype is DataType.Raw:  # FIXME: POTENTIAL ERROR: checking for identity, not equality; may be wrong
             if isinstance(raw, str):
                 buffer.write(raw.encode("UTF-8"))
             elif isinstance(raw, bytes):
@@ -134,9 +126,7 @@ class Encoder(BaseClass):
             if (
                 self.__password is not None
             ):  # if this is the last step (so no encryption) directly write to the final file
-                compressed_buf: TemporaryFile = TemporaryFile(
-                    dir=self._get_default_tempfile_dir(self.__file.name)
-                )
+                compressed_buf: TemporaryFile = TemporaryFile(dir=self._get_default_tempfile_dir(self.__file.name))
             else:
                 compressed_buf = self.__file
             self.log("compressing data")
@@ -166,9 +156,7 @@ class Encoder(BaseClass):
     ):  # datatype is known first when write() is called, so write() (which btw calls this method) passes the datatype
 
         # ATTRIBUTE #
-        self.__file.write(
-            attrib_to_binary(self.__password is not None, self.__compress, datatype)
-        )
+        self.__file.write(attrib_to_binary(self.__password is not None, self.__compress, datatype))
 
         # DESCRIPTION #
         if self.__description:
@@ -217,14 +205,10 @@ class Encoder(BaseClass):
     def description(self, value):
         if not isinstance(value, (bytes, NONETYPE)):
             raise TypeError(f"description: expected bytes or None")
-        elif (
-            value is None or len(value) == 0
-        ):  # ignore empty string; if its not None it will be type bytes
+        elif value is None or len(value) == 0:  # ignore empty string; if its not None it will be type bytes
             self.__description = None
         elif len(value) > DESCRIPTION_MAX_LENGTH:
-            raise ValueError(
-                f"description: maximum length is {DESCRIPTION_MAX_LENGTH}, got {len(value)}"
-            )
+            raise ValueError(f"description: maximum length is {DESCRIPTION_MAX_LENGTH}, got {len(value)}")
         elif 0 in value:
             raise ValueError("description: invalid character: 0-byte")
         else:
@@ -300,13 +284,9 @@ class Encoder(BaseClass):
         elif value is None:
             self.__tag = None
         elif len(value) > TAG_MAX_LENGTH:  # must be bytes
-            raise ValueError(
-                f"tag: maximum length is {TAG_MAX_LENGTH}, got {len(value)}"
-            )
+            raise ValueError(f"tag: maximum length is {TAG_MAX_LENGTH}, got {len(value)}")
         elif invalid_chars := set(value).difference(TAG_VALID_CHARS):
-            raise ValueError(
-                f"description: invalid characters: {repr(bytes(sorted(invalid_chars)))[2:-1]}"
-            )
+            raise ValueError(f"description: invalid characters: {repr(bytes(sorted(invalid_chars)))[2:-1]}")
         else:
             self.__tag = value
 

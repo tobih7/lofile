@@ -26,11 +26,7 @@ class ExceptHook:
         # some preperation
         from os import get_terminal_size
 
-        vline = (
-            "\x1b[91m\x1b(0"
-            + "q" * (get_terminal_size().columns - 1)
-            + "\x1b(B\x1b[0m\n"
-        )
+        vline = "\x1b[91m\x1b(0" + "q" * (get_terminal_size().columns - 1) + "\x1b(B\x1b[0m\n"
 
         # KeyboardInterrupt: just exit
         if type_ is KeyboardInterrupt:
@@ -47,14 +43,11 @@ class ExceptHook:
             except ModuleNotFoundError:
                 pass
             else:
-                missing = {"pycryptodome", "loolclitools"}.difference(
-                    {pkg.key for pkg in working_set}
-                )
+                missing = {"pycryptodome", "loolclitools"}.difference({pkg.key for pkg in working_set})
 
                 if missing:  # else: proceed below with 'unexpected error'
                     print(
-                        "\n  Missing third-party module"
-                        + ("s:" if len(missing) > 1 else ":"),
+                        "\n  Missing third-party module" + ("s:" if len(missing) > 1 else ":"),
                         ", ".join(missing),
                     )
                     self.pause()
@@ -64,17 +57,12 @@ class ExceptHook:
             from io import StringIO
 
             sys.stderr = StringIO()
-            print(
-                f"\r{vline}\n  Development-Mode is enabled, "
-                "therefore showing unhandled exceptions:\n"
-            )
+            print(f"\r{vline}\n  Development-Mode is enabled, therefore showing unhandled exceptions:\n")
             sys.__excepthook__(type_, value, traceback)
             sys.stderr.seek(0)
             print(
                 "  ",
-                "\n\n".join(
-                    sys.stderr.read().replace("\n", "\n  ").rsplit("\n", 2)[:-1]
-                ),
+                "\n\n".join(sys.stderr.read().replace("\n", "\n  ").rsplit("\n", 2)[:-1]),
                 "\n\n",
                 vline,
                 "\n\n\n",
@@ -109,9 +97,9 @@ class ExceptHook:
         try:
             from loolclitools import getch, InteractiveConsole
 
-            InteractiveConsole.temporary_globals[
-                "traceback"
-            ] = lambda: sys.__excepthook__(self.type_, self.value, self.traceback)
+            InteractiveConsole.temporary_globals["traceback"] = lambda: sys.__excepthook__(
+                self.type_, self.value, self.traceback
+            )
 
         except:
             try:

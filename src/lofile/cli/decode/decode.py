@@ -42,9 +42,7 @@ def decode(filepath: str):
 
             if decoder.description is not None:
                 description = (
-                    decoder.description.replace(b"\r\n", b"\n")
-                    .decode("UTF-8")
-                    .replace("\n", f"\n\x1b[{LJUST + 2}C")
+                    decoder.description.replace(b"\r\n", b"\n").decode("UTF-8").replace("\n", f"\n\x1b[{LJUST + 2}C")
                 )
                 param("Description", description, LJUST)
                 if "\n" in description:
@@ -90,9 +88,7 @@ def decode(filepath: str):
                 # PRINT TO CONSOLE #
                 if s == 0:
                     timeouts.start()
-                    escaped = (
-                        Selector(("raw", "escaped"), "How to print?", "->", False) == 1
-                    )
+                    escaped = Selector(("raw", "escaped"), "How to print?", "->", False) == 1
                     timeouts.stop()
                     out("\x1b[2CData:\n" + vline() + "\n")
                     while buf := data.read(DEFAULT_BUFFER_SIZE):
@@ -140,21 +136,11 @@ def decode(filepath: str):
                         == 0
                     )
                     timeouts.stop()
-                    json_data = (
-                        dumps(data, indent=4)
-                        if formatted
-                        else dumps(data, separators=(",", ":"))
-                    )
+                    json_data = dumps(data, indent=4) if formatted else dumps(data, separators=(",", ":"))
 
                     # PRINT TO CONSOLE #
                     if s == 0:
-                        out(
-                            "\x1b[2C"
-                            + ("Formatted data" if formatted else "Data")
-                            + ":\n"
-                            + vline()
-                            + "\n"
-                        )
+                        out("\x1b[2C" + ("Formatted data" if formatted else "Data") + ":\n" + vline() + "\n")
                         out(json_data, "\n" + vline() + "\n")
 
                     # SAVE TO FILE #
@@ -170,9 +156,7 @@ def decode(filepath: str):
                             file.write(json_data)
                         out("\r\x1b[K")
                         param(
-                            "Data "
-                            + ("formatted and " if formatted else "")
-                            + "saved to",
+                            "Data " + ("formatted and " if formatted else "") + "saved to",
                             path,
                         )
 
@@ -195,11 +179,7 @@ def decode(filepath: str):
                     out("\x1b[A\x1b[J\x1b[2C\x1b[93mExtracting ... ")
                     flush()
                     path = ospath.realpath(
-                        ospath.normpath(
-                            ospath.join(
-                                path, ospath.splitext(ospath.split(filepath)[1])[0]
-                            )
-                        )
+                        ospath.normpath(ospath.join(path, ospath.splitext(ospath.split(filepath)[1])[0]))
                     )
                     data.extract_all(path)
                     out("\r\x1b[K")
@@ -211,14 +191,10 @@ def decode(filepath: str):
                     elements = {}
                     for i in data.files:
                         if not i.is_dir:
-                            elements[i.path] = f"{i.length:,d}", "byte" + (
-                                "s" if i.length != 1 else ""
-                            )
+                            elements[i.path] = f"{i.length:,d}", "byte" + ("s" if i.length != 1 else "")
                         else:
                             elements[i.path + "\\"] = "0", "items"
-                    max_num_length = max(
-                        len(i[0]) for i in elements.values()
-                    )  # max length of x bytes, items
+                    max_num_length = max(len(i[0]) for i in elements.values())  # max length of x bytes, items
                     for i in sorted(elements.keys(), key=str.casefold):
                         out(
                             f"\x1b[3C- {i}".ljust(max_path_length + 10),
@@ -230,15 +206,11 @@ def decode(filepath: str):
                     dirs = (
                         {}
                     )  # contains each directory, each value is the number of subdirs and files inside the directory
-                    files = (
-                        {}
-                    )  # contains each file, each value is the length (size) of the file
+                    files = {}  # contains each file, each value is the length (size) of the file
                     empty_dirs = []  # empty_dirs contains each empty dir once
                     for i in data.files:
                         path = i.path.partition(ospath.sep)
-                        if path[
-                            1
-                        ]:  # if the path has subdirs or subfiles path[1] is "\\", so not empty
+                        if path[1]:  # if the path has subdirs or subfiles path[1] is "\\", so not empty
                             if path[0] in dirs.keys():  # increment counter
                                 dirs[path[0]] += 1
                             else:  # create element
@@ -252,21 +224,15 @@ def decode(filepath: str):
                     elements = {}
 
                     for i in sorted(dirs.keys(), key=str.casefold):
-                        elements[i + "\\"] = f"{dirs[i]:,d}", "item" + (
-                            "s" if dirs[i] != 1 else ""
-                        )
+                        elements[i + "\\"] = f"{dirs[i]:,d}", "item" + ("s" if dirs[i] != 1 else "")
                     for i in empty_dirs:
                         elements[i + "\\"] = "0", "items"
                     for i in sorted(files.keys(), key=str.casefold):
-                        elements[i] = f"{files[i]:,d}", "byte" + (
-                            "s" if files[i] != 1 else ""
-                        )
+                        elements[i] = f"{files[i]:,d}", "byte" + ("s" if files[i] != 1 else "")
 
                     max_path_length = len(max(elements.keys(), key=len))
 
-                    max_num_length = max(
-                        len(i[0]) for i in elements.values()
-                    )  # max length of x bytes, items
+                    max_num_length = max(len(i[0]) for i in elements.values())  # max length of x bytes, items
 
                     out("\x1b[2C\x1b[96mList of the root directory:\x1b[0m\n")
 
@@ -281,9 +247,7 @@ def decode(filepath: str):
                 filepaths_in_archive = {i.path: i for i in data.files if not i.is_dir}
 
                 def ask_file_in_archive():
-                    err = lambda msg: out(
-                        f"\x1b[B\x1b[2C\x1b[J\x1b[91m{msg}\x1b[0m\x1b[u\x1b[K"
-                    )
+                    err = lambda msg: out(f"\x1b[B\x1b[2C\x1b[J\x1b[91m{msg}\x1b[0m\x1b[u\x1b[K")
                     while True:
                         selected_file = askinput("File: ")
                         if not selected_file in filepaths_in_archive.keys():
@@ -322,11 +286,7 @@ def decode(filepath: str):
                             out("\x1b[2A\x1b[0m\x1b[J")
 
                             final_filepath = ospath.realpath(
-                                ospath.normpath(
-                                    ospath.join(
-                                        path, ospath.split(selected_file.path)[1]
-                                    )
-                                )
+                                ospath.normpath(ospath.join(path, ospath.split(selected_file.path)[1]))
                             )
 
                             if ospath.exists(final_filepath):

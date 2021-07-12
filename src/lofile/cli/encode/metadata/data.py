@@ -11,9 +11,7 @@ from lofile.cli.shared import DataOrigin
 class Data:
     def _set_data(self):  # change data (editing functionallity)
 
-        self.__start_pos = (
-            get_cursor_position()
-        )  # this could be absolute position (4th line), but this is safer
+        self.__start_pos = get_cursor_position()  # this could be absolute position (4th line), but this is safer
         end_header = lambda: out("\n", vline(), "\n\n")
 
         out(vline(), f"\r\x1b[4C\x1b[96m  {self.datatype.name}  \x1b[0m\n\n")
@@ -47,9 +45,7 @@ class Data:
                     ).pos
                     if s == 0:
                         self.__gototop()
-                        self.data = self._data_raw(
-                            method=1, data=self.data.read()
-                        )  # 1 = notepad_input
+                        self.data = self._data_raw(method=1, data=self.data.read())  # 1 = notepad_input
                     elif s == 1:
                         self.__reset_data()
 
@@ -63,9 +59,7 @@ class Data:
                     ).pos
                     if s == 0:
                         self.__gototop()
-                        self.data = self._data_raw(
-                            method=1, data=self.data.encode()
-                        )  # 1 = notepad_input
+                        self.data = self._data_raw(method=1, data=self.data.encode())  # 1 = notepad_input
                     elif s == 1:
                         self.__reset_data()
 
@@ -97,9 +91,7 @@ class Data:
                 ):
                     param(
                         "Origin",
-                        "Notepad Input"
-                        if self.dataorigin[0] == DataOrigin.NotepadInput
-                        else "Console Input",
+                        "Notepad Input" if self.dataorigin[0] == DataOrigin.NotepadInput else "Console Input",
                     )
                     end_header()
 

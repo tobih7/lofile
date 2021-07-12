@@ -14,9 +14,7 @@ def installer():
     FILE_EXTENSION = os.path.splitext(os.path.realpath(sys.argv[0]))[
         1
     ]  # installation is possible via an .exe file or an .pyz file, so the extension needs to be determined
-    TARGET_PATH = os.path.join(
-        os.getenv("PROGRAMFILES"), "lool", "lofile", f"lofile{FILE_EXTENSION}"
-    )
+    TARGET_PATH = os.path.join(os.getenv("PROGRAMFILES"), "lool", "lofile", f"lofile{FILE_EXTENSION}")
 
     # this actions have to be done with admin rights:
     INSTALLATION_SCRIPT = "&".join(
@@ -39,15 +37,11 @@ def installer():
     )
 
     if not os.path.splitext(sys.argv[0])[1] in (".pyz", ".exe"):
-        out(
-            "  \x1b[91mInstalling is only possible if lofile is running as an .exe or an .pyz file!\n"
-        )
+        out("  \x1b[91mInstalling is only possible if lofile is running as an .exe or an .pyz file!\n")
         return
 
     # options
-    create_desktop_shortcut = bool(
-        Selector(("No", "Yes"), "Create a desktop shortcut?").pos
-    )
+    create_desktop_shortcut = bool(Selector(("No", "Yes"), "Create a desktop shortcut?").pos)
     out("\n")
 
     # check for admin access

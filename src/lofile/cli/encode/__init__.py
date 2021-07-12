@@ -28,6 +28,4 @@ class encode(Encoder, Metadata, Data):
             ...
 
         except LofileError as err:
-            out(
-                "\r\x1b[K  \x1b[0mError: \x1b[91m", str(err).capitalize(), "! \x1b[0m\n"
-            )
+            out("\r\x1b[K  \x1b[0mError: \x1b[91m", str(err).capitalize(), "! \x1b[0m\n")

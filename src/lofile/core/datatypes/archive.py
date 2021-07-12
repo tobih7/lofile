@@ -63,12 +63,8 @@ class FilesToBinary:
                         yield error
                 else:
                     try:  # sometimes an error is first raised on calling file.read # ka y
-                        file.seek(
-                            0, 2
-                        )  # move to EOF so that current pos equals file size
-                        yield self.binpath(i) + b"\x00" + int_to_binary(
-                            file.tell()
-                        ) + b"\x00"
+                        file.seek(0, 2)  # move to EOF so that current pos equals file size
+                        yield self.binpath(i) + b"\x00" + int_to_binary(file.tell()) + b"\x00"
                         file.seek(0, 0)  # move back to pos 0
                         while buf := file.read(DEFAULT_BUFFER_SIZE):
                             yield buf
@@ -92,9 +88,7 @@ class BinaryToFiles:
             self.is_dir: bool = False
 
         def __repr__(self):
-            return (
-                "<" + ("Directory " if self.is_dir else "File ") + repr(self.path) + ">"
-            )
+            return "<" + ("Directory " if self.is_dir else "File ") + repr(self.path) + ">"
 
     def __init__(self, file: BinaryIO):
         self.file = file
@@ -109,9 +103,7 @@ class BinaryToFiles:
 
             elif start == b"\x02":  # directory
                 f = self.Path()
-                f.path = self.__read_until_zero()[
-                    1:
-                ].decode()  # [1:] because directorys start with 0x02
+                f.path = self.__read_until_zero()[1:].decode()  # [1:] because directorys start with 0x02
                 f.is_dir = True
                 self.__files.append(f)
 
@@ -151,13 +143,9 @@ class BinaryToFiles:
             makedirs(ospath.join(path, fileobj.path))
         else:
             if not directly:
-                makedirs(
-                    ospath.join(path, ospath.split(fileobj.path)[0]), exist_ok=True
-                )
+                makedirs(ospath.join(path, ospath.split(fileobj.path)[0]), exist_ok=True)
             with open(
-                ospath.join(
-                    path, ospath.split(fileobj.path)[1] if directly else fileobj.path
-                ),
+                ospath.join(path, ospath.split(fileobj.path)[1] if directly else fileobj.path),
                 "wb",
             ) as file:
                 self.file.seek(fileobj.offset)

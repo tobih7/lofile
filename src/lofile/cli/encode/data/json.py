@@ -45,8 +45,7 @@ class JSON:
                 fileobj = notepad_input(
                     filename="json_data",
                     suffix=".json",
-                    header=(f"{err}\n\n" if err else "")
-                    + "\x1b[90mLeave the file empty to cancel.",
+                    header=(f"{err}\n\n" if err else "") + "\x1b[90mLeave the file empty to cancel.",
                     data=data,
                 )
                 data = fileobj.read()
@@ -67,13 +66,9 @@ class JSON:
                         continue
                     elif method == 1:
                         start_pos.apply()
-                        out(
-                            f"\x1b[J\x1b[91m  The file is empty. Assuming request to cancel.\x1b[0m\n\n"
-                        )
+                        out(f"\x1b[J\x1b[91m  The file is empty. Assuming request to cancel.\x1b[0m\n\n")
                         raise KeyboardInterrupt
-                    elif (
-                        method == 2
-                    ):  # assume user wanted to exit, instead if submitting
+                    elif method == 2:  # assume user wanted to exit, instead if submitting
                         raise KeyboardInterrupt
 
                 err = (

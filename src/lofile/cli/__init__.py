@@ -42,19 +42,14 @@ def main(*, dev: bool = False):
             raise SystemExit(1)
 
     # print start message
-    out(
-        "\x1bc\x1b[H\x1b[J\x1b[2;3H\x1b[94m"
-        f"lofile CLI \x1b[90m[v{__version__}]\x1b[0m\x1b[4H"
-    )
+    out("\x1bc\x1b[H\x1b[J\x1b[2;3H\x1b[94m" f"lofile CLI \x1b[90m[v{__version__}]\x1b[0m\x1b[4H")
     flush()
 
     # ask for option of not determinable by command line arguments
     try:
 
         if option == None:
-            option = Selector(
-                ("encode", "decode", None, "more", "exit"), print_result=False
-            )
+            option = Selector(("encode", "decode", None, "more", "exit"), print_result=False)
 
         if option == 0:  # encode
             from .encode import encode
@@ -68,9 +63,7 @@ def main(*, dev: bool = False):
             raise NotImplementedError
 
         elif option == 2:  # more
-            s = Selector(
-                ("install lofile", "uninstall lofile", "exit"), print_result=False
-            )
+            s = Selector(("install lofile", "uninstall lofile", "exit"), print_result=False)
             if s == 0:  # install
                 from .install import installer
 

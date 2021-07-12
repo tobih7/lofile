@@ -49,9 +49,7 @@ class Decoder(BaseClass):
             file.name = devnull  # BytesIO has no name, because it is not an actual file, but name (so the path) is needed to decide
             # where to create the temporary files; when it is devnull the default %tmp% directory is used
         elif not isinstance(file, BufferedReader):
-            raise TypeError(
-                "argument 'file' must be of type BinaryIO/BufferedReader (open() in mode \"rb\")"
-            )
+            raise TypeError("argument 'file' must be of type BinaryIO/BufferedReader (open() in mode \"rb\")")
         self.__file = file  # file is also needed in other methods
 
         if (
@@ -63,9 +61,7 @@ class Decoder(BaseClass):
 
         # ATTRIBUTE #
         try:
-            self.__isencrypted, self.__iscompressed, self.__datatype = binary_to_attrib(
-                file.read(1)[0]
-            )
+            self.__isencrypted, self.__iscompressed, self.__datatype = binary_to_attrib(file.read(1)[0])
         except IndexError:
             raise DecodeError("file is empty")
         except ValueError:
@@ -144,9 +140,7 @@ class Decoder(BaseClass):
                 del pv_data
 
             self.log("decrypting data")
-            decrypted_buf: TemporaryFile = TemporaryFile(
-                dir=self._get_default_tempfile_dir(self.__file.name)
-            )
+            decrypted_buf: TemporaryFile = TemporaryFile(dir=self._get_default_tempfile_dir(self.__file.name))
             decrypt(self.__file, decrypted_buf, self.__password, self.__aes_init_vector)
             decrypted_buf.seek(0)
             self.__file.close()
@@ -155,9 +149,7 @@ class Decoder(BaseClass):
         # DECOMPRESS #
         if self.__iscompressed:
             self.log("decompressing data")
-            decompressed_buf: TemporaryFile = TemporaryFile(
-                dir=self._get_default_tempfile_dir(self.__file.name)
-            )
+            decompressed_buf: TemporaryFile = TemporaryFile(dir=self._get_default_tempfile_dir(self.__file.name))
             try:
                 decompress(self.__file, decompressed_buf)
             except zlib_error:

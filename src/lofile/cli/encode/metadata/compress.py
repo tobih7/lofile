@@ -24,9 +24,7 @@ class Compress:
             self._custom_compression_level_is_set = False
 
         elif cmprs == 2:
-            out(
-                "  The default value is 6.\n\n  Simply pressing a number is possible.\n\n"
-            )
+            out("  The default value is 6.\n\n  Simply pressing a number is possible.\n\n")
             try:
                 self.compression_level = (
                     Selector(

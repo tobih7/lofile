@@ -34,9 +34,7 @@ class Password:
                 self.__ask_password()
 
             elif s == 2:
-                out(
-                    vline(), "\r\x1b[4C\x1b[96m  Current Initialization Vector  \x1b[0m"
-                )
+                out(vline(), "\r\x1b[4C\x1b[96m  Current Initialization Vector  \x1b[0m")
                 out(
                     "\n\n  ",
                     repr(self.init_vector)[2:-1],
@@ -45,10 +43,7 @@ class Password:
                 )
                 # UTF-8 representation
                 try:
-                    if (
-                        bytes(ord(i) for i in self.init_vector.decode())
-                        != self.init_vector
-                    ):
+                    if bytes(ord(i) for i in self.init_vector.decode()) != self.init_vector:
                         # if the binary and the UTF-8 decoded representations differ, show this:
                         out("\n\n  UTF-8 decoded: ", self.init_vector.decode())
                 except UnicodeDecodeError:
@@ -150,9 +145,7 @@ class Password:
                     self.password = pswd
                     break
                 else:
-                    out(
-                        "\x1b[91m  The passwords do not match!\x1b[0m\r\x1b[A\x1b[K\x1b[A\x1b[K"
-                    )
+                    out("\x1b[91m  The passwords do not match!\x1b[0m\r\x1b[A\x1b[K\x1b[A\x1b[K")
 
             except KeyboardInterrupt:
                 break

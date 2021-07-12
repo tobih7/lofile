@@ -80,21 +80,9 @@ def timeformat(time: Union[int, float]) -> str:  # Works perfectly! Do not touch
     assert isinstance(time, (int, float))
     return (
         str(
-            (
-                f"{h} hour{'s' if h > 1 else ''}, "
-                if (h := int(time // 3600)) > 0
-                else ""
-            )
-            + (
-                f"{m} minute{'s' if m > 1 else ''}, "
-                if (m := int(time % 3600 // 60)) > 0
-                else ""
-            )
-            + (
-                f"{s} second{'s' if s > 1 else ''}, "
-                if (s := int(time % 3600 % 60)) > 0
-                else ""
-            )
+            (f"{h} hour{'s' if h > 1 else ''}, " if (h := int(time // 3600)) > 0 else "")
+            + (f"{m} minute{'s' if m > 1 else ''}, " if (m := int(time % 3600 // 60)) > 0 else "")
+            + (f"{s} second{'s' if s > 1 else ''}, " if (s := int(time % 3600 % 60)) > 0 else "")
             + (
                 f"{ms} millisecond{'s' if ms > 1 else ''}, "
                 if (ms := int(round(time % 3600 % 60 % 1, 3) * 1000)) > 0
@@ -177,9 +165,7 @@ def decompress(inputfile: BinaryIO, outputfile: BinaryIO) -> None:
 
 
 # ===  ENCRYPTION  === #
-def encrypt(
-    inputfile: BinaryIO, outputfile: BinaryIO, key: bytes, init_vector: bytes
-) -> None:
+def encrypt(inputfile: BinaryIO, outputfile: BinaryIO, key: bytes, init_vector: bytes) -> None:
     aes = AES.new(key, AES.MODE_CBC, init_vector)
     while buf := inputfile.read(DEFAULT_BUFFER_SIZE):
         if len(buf) != DEFAULT_BUFFER_SIZE:
@@ -189,9 +175,7 @@ def encrypt(
 
 
 # ===  DECRYPTION  === #
-def decrypt(
-    inputfile: BinaryIO, outputfile: BinaryIO, key: bytes, init_vector: bytes
-) -> None:
+def decrypt(inputfile: BinaryIO, outputfile: BinaryIO, key: bytes, init_vector: bytes) -> None:
     aes = AES.new(key, AES.MODE_CBC, init_vector)
     while buf := inputfile.read(DEFAULT_BUFFER_SIZE):
         buf = aes.decrypt(buf)
@@ -216,9 +200,7 @@ class BaseClass:
         self.__tempfile_dir: Optional[Path] = None
         self.__starttime: float = perf_counter()
         self.__took: Optional[float] = None
-        self.__logger: Optional[Callable[[str, LogLvl], None]] = lambda msg, lvl: print(
-            f"[{lvl.name}] - {msg}"
-        )
+        self.__logger: Optional[Callable[[str, LogLvl], None]] = lambda msg, lvl: print(f"[{lvl.name}] - {msg}")
 
     # ===  ENTER  === #
     def __enter__(self):  # for context manager
@@ -238,9 +220,7 @@ class BaseClass:
             return False  # if False: with-statement: exception is raised
 
     # ===  OTHER  === #
-    def log(
-        self, msg: str, lvl: LogLvl = LogLvl.INFO
-    ):  # may be used by caller, from outside
+    def log(self, msg: str, lvl: LogLvl = LogLvl.INFO):  # may be used by caller, from outside
         if not isinstance(msg, str):
             raise TypeError("argument 'msg': expected type str")
         if not isinstance(lvl, LogLvl):
@@ -256,9 +236,7 @@ class BaseClass:
     ):  # if e.g. inputs etc. are used inside the context manager, this is useful
         self.__starttime -= value
 
-    def _get_default_tempfile_dir(
-        self, filepath
-    ) -> Path:  # default tempfile location depends on input/output file
+    def _get_default_tempfile_dir(self, filepath) -> Path:  # default tempfile location depends on input/output file
         if self.tempfile_dir:  # if custom dir was set return it
             return self.tempfile_dir
         stdtmp = Path(getenv("TMP")).resolve()
@@ -305,9 +283,7 @@ class BaseClass:
     @tempfile_dir.setter
     def tempfile_dir(self, value):
         if not isinstance(value, (str, bytes, PurePath, NONETYPE)):
-            raise TypeError(
-                "tempfile_dir: expected path-like or None (str, bytes, pathlib.Path)"
-            )
+            raise TypeError("tempfile_dir: expected path-like or None (str, bytes, pathlib.Path)")
         elif value == None:
             self.__tempfile_dir = None
         else:
